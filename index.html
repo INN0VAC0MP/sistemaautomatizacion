@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propuesta Técnica — Plataforma SaaS Seguridad Privada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0a0f1e;
+    --navy2: #111827;
+    --blue: #378ADD;
+    --blue-light: #B5D4F4;
+    --blue-dk: #042C53;
+    --green-l: #C0DD97;
+    --green-dk: #173404;
+    --amber-l: #FAC775;
+    --amber-dk: #412402;
+    --teal-l: #9FE1CB;
+    --teal-dk: #04342C;
+    --pink-l: #F4C0D1;
+    --pink-dk: #4B1528;
+    --gray-bg: #F4F2EE;
+    --gray-mid: #D3D1C7;
+    --gray-text: #5F5E5A;
+    --white: #ffffff;
+    --black: #0d0d0d;
+    --warn-bg: #3a1208;
+    --warn-txt: #FAC775;
+    --warn-body: #F5C4B3;
+    --border: rgba(0,0,0,0.09);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f0ede8;
+    color: var(--black);
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,15,30,0.96);
+    backdrop-filter: blur(12px);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px; color: white; font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+  .nav-badge {
+    font-size: 10px; color: #85B7EB;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    border: 1px solid rgba(55,138,221,0.35);
+    padding: 3px 10px; border-radius: 20px;
+    background: rgba(55,138,221,0.1);
+  }
+  .nav-validity {
+    font-size: 11px; color: rgba(255,255,255,0.4);
+  }
+
+  /* ── LAYOUT ── */
+  .page { max-width: 900px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--navy);
+    border-radius: 0 0 20px 20px;
+    padding: 4rem 3rem 3rem;
+    position: relative; overflow: hidden;
+    margin-bottom: 2rem;
+  }
+  .hero::before {
+    content: ''; position: absolute;
+    top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    border: 1px solid rgba(55,138,221,0.08);
+  }
+  .hero::after {
+    content: ''; position: absolute;
+    bottom: -50px; left: 60px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(55,138,221,0.15);
+    color: #85B7EB;
+    font-size: 10px; letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 4px 14px; border-radius: 20px;
+    border: 1px solid rgba(55,138,221,0.28);
+    margin-bottom: 1.5rem; font-weight: 500;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 5vw, 42px);
+    color: white; font-weight: 700;
+    line-height: 1.2; margin-bottom: 0.75rem;
+  }
+  .hero-sub {
+    font-size: 14px; color: rgba(255,255,255,0.45);
+    margin-bottom: 2.5rem; max-width: 520px;
+  }
+  .hero-meta {
+    display: flex; gap: 2.5rem; flex-wrap: wrap;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 1.5rem;
+  }
+  .hero-meta-item { display: flex; flex-direction: column; gap: 3px; }
+  .hero-meta-label {
+    font-size: 9px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: rgba(255,255,255,0.3);
+  }
+  .hero-meta-value { font-size: 13px; color: rgba(255,255,255,0.75); font-weight: 500; }
+
+  /* ── ALERT ── */
+  .alert {
+    background: var(--blue-light);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2.5rem;
+    font-size: 13.5px; color: var(--blue-dk); line-height: 1.65;
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-size: 9px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--gray-text);
+    font-weight: 600; margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::after {
+    content: ''; flex: 1; height: 0.5px; background: var(--gray-mid);
+  }
+
+  /* ── PHASES ── */
+  .phases { display: flex; flex-direction: column; gap: 10px; margin-bottom: 2.5rem; }
+  .phase-card {
+    background: white;
+    border: 1px solid rgba(0,0,0,0.07);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    display: grid;
+    grid-template-columns: 40px 1fr auto;
+    gap: 1rem; align-items: start;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .phase-card:hover {
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    transform: translateY(-1px);
+  }
+  .phase-num {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; flex-shrink: 0;
+  }
+  .p1 { background: var(--blue-light); color: var(--blue-dk); }
+  .p2 { background: var(--green-l);   color: var(--green-dk); }
+  .p3 { background: var(--amber-l);   color: var(--amber-dk); }
+  .p4 { background: var(--teal-l);    color: var(--teal-dk); }
+  .p5 { background: var(--pink-l);    color: var(--pink-dk); }
+
+  .phase-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .phase-sub { font-size: 12px; color: var(--gray-text); margin-bottom: 10px; }
+  .phase-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tag {
+    font-size: 11px; padding: 3px 10px;
+    border-radius: 20px; background: var(--gray-bg);
+    color: var(--gray-text); border: 1px solid rgba(0,0,0,0.06);
+  }
+  .phase-price { text-align: right; flex-shrink: 0; }
+  .phase-price-label { font-size: 9px; color: var(--gray-text); text-transform: uppercase; letter-spacing: 0.08em; }
+  .phase-price-amount { font-size: 16px; font-weight: 700; white-space: nowrap; margin: 2px 0; }
+  .phase-price-time { font-size: 11px; color: var(--gray-text); }
+
+  /* ── PRICING ── */
+  .pricing-summary {
+    background: var(--navy);
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+    margin-bottom: 2.5rem;
+    color: white;
+  }
+  .pricing-label {
+    font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: rgba(255,255,255,0.3); margin-bottom: 1rem;
+  }
+  .pricing-rows { border-top: 1px solid rgba(255,255,255,0.07); padding-top: 1rem; }
+  .pricing-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.5rem 0; font-size: 13px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .pricing-row:last-child { border-bottom: none; }
+  .pricing-row-lbl { color: rgba(255,255,255,0.5); }
+  .pricing-row-val { color: rgba(255,255,255,0.85); font-weight: 500; white-space: nowrap; }
+  .pricing-total {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-top: 1.5rem; padding-top: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+  .pricing-total-lbl {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.35);
+  }
+  .pricing-total-amt {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px; font-weight: 700;
+  }
+  .pricing-total-cur { font-size: 18px; color: rgba(255,255,255,0.45); margin-right: 6px; font-family: 'DM Sans', sans-serif; }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+    border-left: 2px solid var(--gray-mid);
+    margin-bottom: 2.5rem;
+  }
+  .tl-item { margin-bottom: 1.75rem; position: relative; }
+  .tl-dot {
+    position: absolute; left: -2.6rem; top: 4px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--blue);
+    border: 3px solid #f0ede8;
+  }
+  .tl-dot.done { background: #1D9E75; }
+  .tl-week { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--blue); font-weight: 600; margin-bottom: 2px; }
+  .tl-week.done { color: #1D9E75; }
+  .tl-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+  .tl-desc { font-size: 12px; color: var(--gray-text); }
+
+  /* ── VALUE GRID ── */
+  .value-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px; margin-bottom: 2.5rem;
+  }
+  .value-card {
+    background: white; border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+  .value-icon { font-size: 22px; margin-bottom: 10px; }
+  .value-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .value-desc { font-size: 12px; color: var(--gray-text); line-height: 1.55; }
+
+  /* ── DELIVERABLES ── */
+  .deliverables-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; margin-bottom: 2.5rem;
+  }
+  .deliverable {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: white; border-radius: 10px;
+    padding: 0.875rem 1rem; font-size: 12.5px;
+    border: 1px solid rgba(0,0,0,0.06);
+    color: var(--gray-text);
+  }
+  .deliverable .check {
+    color: var(--blue); font-weight: 700; flex-shrink: 0; margin-top: 1px;
+  }
+
+  /* ── GUARANTEE ── */
+  .guarantee {
+    background: var(--blue-light);
+    border: 2px solid var(--blue);
+    border-radius: 12px; padding: 1.5rem 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .guarantee-title {
+    font-size: 15px; font-weight: 600; color: var(--blue-dk); margin-bottom: 6px;
+  }
+  .guarantee-text { font-size: 13px; color: var(--blue-dk); line-height: 1.65; }
+
+  /* ── URGENCY ── */
+  .urgency {
+    background: var(--warn-bg);
+    border-radius: 12px; padding: 1.5rem 1.75rem;
+    margin-bottom: 2.5rem;
+    display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;
+  }
+  .urgency-icon { font-size: 30px; flex-shrink: 0; }
+  .urgency-content { flex: 1; }
+  .urgency-title { font-size: 15px; font-weight: 600; color: var(--warn-txt); margin-bottom: 4px; }
+  .urgency-text { font-size: 12.5px; color: var(--warn-body); line-height: 1.55; }
+  .urgency-btn {
+    background: var(--warn-txt); color: var(--warn-bg);
+    border: none; border-radius: 8px;
+    padding: 10px 20px; font-size: 13px; font-weight: 700;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    white-space: nowrap; flex-shrink: 0;
+    text-decoration: none; display: inline-block;
+    transition: background 0.2s;
+  }
+  .urgency-btn:hover { background: white; }
+
+  /* ── TERMS ── */
+  .terms-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; margin-bottom: 2.5rem;
+  }
+  .terms-card {
+    background: white; border-radius: 12px;
+    padding: 1.25rem; border: 1px solid rgba(0,0,0,0.06);
+  }
+  .terms-title {
+    font-size: 13px; font-weight: 600; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .terms-list { list-style: none; font-size: 12px; color: var(--gray-text); line-height: 1.9; }
+  .terms-list li::before { content: '— '; }
+
+  /* ── CTA ── */
+  .cta-final {
+    background: linear-gradient(135deg, #0a0f1e 0%, #0d1f3c 100%);
+    border-radius: 16px; padding: 3rem 2rem;
+    text-align: center; margin-bottom: 1.5rem;
+  }
+  .cta-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; color: white; margin-bottom: 0.5rem;
+  }
+  .cta-sub { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 2rem; }
+  .cta-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--blue); color: white;
+    border: none; border-radius: 8px;
+    padding: 13px 28px; font-size: 13px; font-weight: 600;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    text-decoration: none; display: inline-block;
+    transition: background 0.2s;
+  }
+  .btn-primary:hover { background: #185FA5; }
+  .btn-ghost {
+    background: transparent; color: rgba(255,255,255,0.55);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 8px; padding: 13px 28px;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    text-decoration: none; display: inline-block;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.4); color: rgba(255,255,255,0.8); }
+
+  .footer-note {
+    text-align: center; font-size: 11px; color: var(--gray-text); line-height: 1.8;
+  }
+
+  /* ── REVEAL ANIMATIONS ── */
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.55s ease, transform 0.55s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 620px) {
+    .hero { padding: 2.5rem 1.5rem 2rem; }
+    .pricing-summary { padding: 1.5rem; }
+    .deliverables-grid { grid-template-columns: 1fr; }
+    .terms-grid { grid-template-columns: 1fr; }
+    .phase-card { grid-template-columns: 36px 1fr; }
+    .phase-price { grid-column: 2; text-align: left; }
+    nav { padding: 0 1rem; }
+    .nav-validity { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">SecuraSaaS</div>
+  <div class="nav-badge">Propuesta Técnica</div>
+  <div class="nav-validity">Válida hasta 11 jun 2026</div>
+</nav>
+
+<div style="max-width:900px; margin:0 auto; padding:0 1.5rem;">
+
+  <!-- HERO -->
+  <div class="hero reveal">
+    <div class="hero-badge">Propuesta Técnica &amp; Comercial</div>
+    <h1>Plataforma SaaS de Gestión<br>para Seguridad Privada</h1>
+    <p class="hero-sub">Solución integral con IA, WhatsApp Business &amp; panel operativo en tiempo real</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Fecha</span>
+        <span class="hero-meta-value">Mayo 2026</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Validez</span>
+        <span class="hero-meta-value">15 días calendario</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Modalidad</span>
+        <span class="hero-meta-value">Proyecto llave en mano</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Entrega estimada</span>
+        <span class="hero-meta-value">8–10 semanas</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALERT -->
+  <div class="alert reveal">
+    <strong>¿Por qué esta plataforma cambia su operación?</strong> Las empresas de seguridad que digitalizan su gestión reducen hasta un 40% el tiempo administrativo, eliminan errores en turnos y novedades, y proyectan una imagen profesional que gana contratos de mayor valor. Este sistema no es un gasto — es la infraestructura que le permite escalar sin contratar más personal administrativo.
+  </div>
+
+  <!-- PHASES -->
+  <div class="section-label reveal">Plan de ejecución por fases</div>
+  <div class="phases">
+
+    <div class="phase-card reveal">
+      <div class="phase-num p1">01</div>
+      <div>
+        <div class="phase-title">Arquitectura &amp; Base del sistema</div>
+        <div class="phase-sub">Semanas 1–2 · Fundamentos sólidos antes de construir</div>
+        <div class="phase-tags">
+          <span class="tag">Infraestructura Docker + VPS</span>
+          <span class="tag">PostgreSQL</span>
+          <span class="tag">NestJS API</span>
+          <span class="tag">Autenticación &amp; roles</span>
+          <span class="tag">CI/CD + HTTPS</span>
+        </div>
+      </div>
+      <div class="phase-price">
+        <div class="phase-price-label">Inversión</div>
+        <div class="phase-price-amount">Bs. 12.000</div>
+        <div class="phase-price-time">2 semanas</div>
+      </div>
+    </div>
+
+    <div class="phase-card reveal">
+      <div class="phase-num p2">02</div>
+      <div>
+        <div class="phase-title">Dashboard &amp; Gestión operativa</div>
+        <div class="phase-sub">Semanas 3–5 · El corazón del sistema</div>
+        <div class="phase-tags">
+          <span class="tag">Next.js + Tailwind + Shadcn</span>
+          <span class="tag">Gestión de guardias</span>
+          <span class="tag">Control de turnos</span>
+          <span class="tag">Asistencia virtual</span>
+          <span class="tag">Socket.IO tiempo real</span>
+        </div>
+      </div>
+      <div class="phase-price">
+        <div class="phase-price-label">Inversión</div>
+        <div class="phase-price-amount">Bs. 22.000</div>
+        <div class="phase-price-time">3 semanas</div>
+      </div>
+    </div>
+
+    <div class="phase-card reveal">
+      <div class="phase-num p3">03</div>
+      <div>
+        <div class="phase-title">IA + WhatsApp Business</div>
+        <div class="phase-sub">Semanas 5–7 · Automatización inteligente</div>
+        <div class="phase-tags">
+          <span class="tag">FastAPI + OpenAI GPT-4o</span>
+          <span class="tag">WhatsApp Cloud API Meta</span>
+          <span class="tag">Agente conversacional</span>
+          <span class="tag">Clasificación de incidencias</span>
+          <span class="tag">Cotizaciones automáticas</span>
+        </div>
+      </div>
+      <div class="phase-price">
+        <div class="phase-price-label">Inversión</div>
+        <div class="phase-price-amount">Bs. 20.000</div>
+        <div class="phase-price-time">3 semanas</div>
+      </div>
+    </div>
+
+    <div class="phase-card reveal">
+      <div class="phase-num p4">04</div>
+      <div>
+        <div class="phase-title">Novedades, Reportes &amp; Auditoría</div>
+        <div class="phase-sub">Semanas 7–9 · Trazabilidad total</div>
+        <div class="phase-tags">
+          <span class="tag">Registro con fotos/audio/GPS</span>
+          <span class="tag">PDF + Excel automáticos</span>
+          <span class="tag">Log de auditoría</span>
+          <span class="tag">Historial completo</span>
+          <span class="tag">Workflows n8n</span>
+        </div>
+      </div>
+      <div class="phase-price">
+        <div class="phase-price-label">Inversión</div>
+        <div class="phase-price-amount">Bs. 14.000</div>
+        <div class="phase-price-time">2 semanas</div>
+      </div>
+    </div>
+
+    <div class="phase-card reveal">
+      <div class="phase-num p5">05</div>
+      <div>
+        <div class="phase-title">QA, Capacitación &amp; Lanzamiento</div>
+        <div class="phase-sub">Semanas 9–10 · Entrega lista para producción</div>
+        <div class="phase-tags">
+          <span class="tag">Testing integral</span>
+          <span class="tag">Documentación técnica</span>
+          <span class="tag">Manual de usuario</span>
+          <span class="tag">Capacitación al equipo</span>
+          <span class="tag">Soporte 30 días incluido</span>
+        </div>
+      </div>
+      <div class="phase-price">
+        <div class="phase-price-label">Inversión</div>
+        <div class="phase-price-amount">Bs. 7.000</div>
+        <div class="phase-price-time">2 semanas</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PRICING -->
+  <div class="pricing-summary reveal">
+    <div class="pricing-label">Resumen de inversión</div>
+    <div class="pricing-rows">
+      <div class="pricing-row"><span class="pricing-row-lbl">Fase 1 — Arquitectura &amp; Base</span><span class="pricing-row-val">Bs. 12.000</span></div>
+      <div class="pricing-row"><span class="pricing-row-lbl">Fase 2 — Dashboard &amp; Gestión operativa</span><span class="pricing-row-val">Bs. 22.000</span></div>
+      <div class="pricing-row"><span class="pricing-row-lbl">Fase 3 — IA + WhatsApp Business</span><span class="pricing-row-val">Bs. 20.000</span></div>
+      <div class="pricing-row"><span class="pricing-row-lbl">Fase 4 — Novedades, Reportes &amp; Auditoría</span><span class="pricing-row-val">Bs. 14.000</span></div>
+      <div class="pricing-row"><span class="pricing-row-lbl">Fase 5 — QA, Capacitación &amp; Lanzamiento</span><span class="pricing-row-val">Bs. 7.000</span></div>
+      <div class="pricing-row"><span class="pricing-row-lbl">Mantenimiento mensual (opcional)</span><span class="pricing-row-val">Bs. 3.500/mes</span></div>
+    </div>
+    <div class="pricing-total">
+      <span class="pricing-total-lbl">Total del proyecto</span>
+      <span class="pricing-total-amt"><span class="pricing-total-cur">Bs.</span>75.000</span>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="section-label reveal">Cronograma de entrega</div>
+  <div class="timeline reveal">
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-week">Semanas 1–2</div>
+      <div class="tl-title">Infraestructura lista y base de datos en producción</div>
+      <div class="tl-desc">Servidor configurado, dominio activo, API funcional con autenticación</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-week">Semanas 3–5</div>
+      <div class="tl-title">Dashboard operativo en uso real</div>
+      <div class="tl-desc">Gestión de guardias, turnos, alertas y monitoreo en tiempo real</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-week">Semanas 5–7</div>
+      <div class="tl-title">IA y WhatsApp respondiendo clientes automáticamente</div>
+      <div class="tl-desc">Agente conversacional activo, cotizaciones generadas por IA</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-week">Semanas 7–9</div>
+      <div class="tl-title">Reportes PDF/Excel y registro de novedades con GPS</div>
+      <div class="tl-desc">Trazabilidad completa, auditoría activa, workflows automatizados</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot done"></div>
+      <div class="tl-week done">Semana 10 — Entrega final</div>
+      <div class="tl-title">Sistema 100% operativo, equipo capacitado</div>
+      <div class="tl-desc">30 días de soporte post-lanzamiento incluidos sin costo adicional</div>
+    </div>
+  </div>
+
+  <!-- VALUE -->
+  <div class="section-label reveal">Por qué este sistema vale lo que cuesta</div>
+  <div class="value-grid reveal">
+    <div class="value-card">
+      <div class="value-icon">📈</div>
+      <div class="value-title">ROI en 3 meses</div>
+      <div class="value-desc">Ahorro en horas administrativas y errores operativos cubre la inversión en el primer trimestre</div>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">🤖</div>
+      <div class="value-title">Atiende clientes 24/7</div>
+      <div class="value-desc">El agente IA responde, cotiza y califica leads mientras su equipo duerme</div>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">🏢</div>
+      <div class="value-title">Imagen de empresa grande</div>
+      <div class="value-desc">Sus clientes ven una plataforma de nivel corporativo, no una hoja de Excel</div>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">🚀</div>
+      <div class="value-title">Listo para escalar</div>
+      <div class="value-desc">Arquitectura multiempresa, lista para GPS móvil, analítica avanzada y más clientes</div>
+    </div>
+  </div>
+
+  <!-- DELIVERABLES -->
+  <div class="section-label reveal">Lo que recibe incluido</div>
+  <div class="deliverables-grid reveal">
+    <div class="deliverable"><span class="check">✓</span>Dashboard SaaS con sidebar administrativo completo</div>
+    <div class="deliverable"><span class="check">✓</span>Integración oficial Meta WhatsApp Cloud API</div>
+    <div class="deliverable"><span class="check">✓</span>Agente IA conversacional con GPT-4o</div>
+    <div class="deliverable"><span class="check">✓</span>Gestión de turnos y control de asistencia virtual</div>
+    <div class="deliverable"><span class="check">✓</span>Cotizaciones profesionales generadas automáticamente</div>
+    <div class="deliverable"><span class="check">✓</span>Sistema de alertas y novedades con evidencias</div>
+    <div class="deliverable"><span class="check">✓</span>Reportes PDF y Excel automáticos</div>
+    <div class="deliverable"><span class="check">✓</span>Registro de puestos con GPS y fotos</div>
+    <div class="deliverable"><span class="check">✓</span>Seguridad empresarial: HTTPS, roles, backups</div>
+    <div class="deliverable"><span class="check">✓</span>Código fuente completo en repositorio privado</div>
+    <div class="deliverable"><span class="check">✓</span>Manual técnico + manual de usuario</div>
+    <div class="deliverable"><span class="check">✓</span>30 días de soporte post-entrega incluidos</div>
+  </div>
+
+  <!-- GUARANTEE -->
+  <div class="guarantee reveal">
+    <div class="guarantee-title">🛡️ Garantía de entrega y funcionamiento</div>
+    <div class="guarantee-text">El sistema se entrega completamente funcional según las especificaciones acordadas o se corrige sin costo adicional. Incluye 30 días de soporte post-lanzamiento. Si en la primera semana de uso hay funcionalidades que no operan como se demostró, se corrigen en menos de 48 horas.</div>
+  </div>
+
+  <!-- URGENCY -->
+  <div class="urgency reveal">
+    <div class="urgency-icon">⏰</div>
+    <div class="urgency-content">
+      <div class="urgency-title">Esta propuesta tiene validez de 15 días</div>
+      <div class="urgency-text">Confirmar antes del <strong>11 de junio de 2026</strong> garantiza inicio inmediato y los costos actuales. Los precios están sujetos a disponibilidad del equipo de desarrollo.</div>
+    </div>
+    <a class="urgency-btn" href="mailto:?subject=Confirmar%20Propuesta%20SaaS%20Seguridad&body=Hola%2C%20quiero%20confirmar%20la%20propuesta%20y%20avanzar%20con%20el%20proyecto.">Confirmar ahora →</a>
+  </div>
+
+  <!-- TERMS -->
+  <div class="section-label reveal">Condiciones comerciales</div>
+  <div class="terms-grid reveal">
+    <div class="terms-card">
+      <div class="terms-title">💳 Forma de pago</div>
+      <ul class="terms-list">
+        <li>40% al confirmar el contrato (Bs. 30.000)</li>
+        <li>30% al entregar Fase 2 (Bs. 22.500)</li>
+        <li>30% en la entrega final (Bs. 22.500)</li>
+      </ul>
+    </div>
+    <div class="terms-card">
+      <div class="terms-title">📦 Incluye</div>
+      <ul class="terms-list">
+        <li>Código fuente en repositorio privado</li>
+        <li>Documentación técnica completa</li>
+        <li>Capacitación al equipo administrativo</li>
+        <li>30 días soporte post-lanzamiento</li>
+      </ul>
+    </div>
+    <div class="terms-card">
+      <div class="terms-title">✗ No incluye</div>
+      <ul class="terms-list">
+        <li>Servidor VPS (aprox. Bs. 200/mes)</li>
+        <li>API OpenAI (~Bs. 150/mes por uso)</li>
+        <li>WhatsApp Business número verificado</li>
+        <li>Cambios de alcance fuera del contrato</li>
+      </ul>
+    </div>
+    <div class="terms-card">
+      <div class="terms-title">🔄 Mantenimiento mensual</div>
+      <ul class="terms-list">
+        <li>Bs. 3.500/mes (opcional post-entrega)</li>
+        <li>Actualizaciones de seguridad</li>
+        <li>Soporte técnico prioritario</li>
+        <li>Mejoras menores incluidas</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-final reveal">
+    <div class="cta-title">Listo para transformar su operación</div>
+    <div class="cta-sub">10 semanas para tener una plataforma que sus competidores no tienen</div>
+    <div class="cta-btns">
+      <a class="btn-primary" href="mailto:?subject=Quiero%20confirmar%20la%20propuesta%20SaaS%20Seguridad&body=Hola%2C%20deseo%20confirmar%20la%20propuesta%20y%20conocer%20los%20siguientes%20pasos%20para%20iniciar%20el%20proyecto.">Iniciar proyecto →</a>
+      <a class="btn-ghost" href="tel:+591">Llamar para consultas</a>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    Propuesta preparada a medida · Precio en bolivianos (Bs.) · Válida hasta el 11 de junio de 2026<br>
+    Este documento es confidencial y está destinado exclusivamente al cliente al que se presenta.
+  </div>
+
+  <div style="height:2rem;"></div>
+
+</div>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 60);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
